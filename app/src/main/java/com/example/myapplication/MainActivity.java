@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.nfc.cardemulation.CardEmulation;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -49,10 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-        // specify an adapter (see also next example)
-        String[] myDataset={"fact1","fact2"};
-        mAdapter = new MyAdapter(myDataset);
+        final Vm.OnFactGetListener listener;
+        mAdapter = new MyAdapter(<List<CatFact>> facts, listener);
         recyclerView.setAdapter(mAdapter);
 
 
@@ -99,7 +100,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         });
-        model.getCurrentName().observe(this, nameObserver);
+        //model.getFacts();
+        model.getCurrentName().observe(this,new Observer<List<CatFact>>() {
+            @Override
+            public void onChanged(List<CatFact> catFacts) {
+                p.setVisibility(View.GONE);
+                MyAdapter adapter= new MyAdapter(catFacts,listener);
+                recyclerView.setAdapter(adapter);
+
+            }
+                });
+
 
     }
 
@@ -108,6 +119,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String str=et.getText().toString();
         Toast msg = Toast.makeText(getBaseContext(), str, Toast.LENGTH_LONG);
         msg.show();
+
+
+    }
+
+    @Override
+    public void onFactClicked(CatFact catFact) {
+        Toast.makeText(getBaseContext(), catFact.fact, Toast.LENGTH_LONG).show();
 
 
     }

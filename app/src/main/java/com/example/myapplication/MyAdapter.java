@@ -1,55 +1,69 @@
 package com.example.myapplication;
 
+import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.w3c.dom.Text;
+
+import java.util.List;
+import java.util.Random;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
-    private String[] mDataset;
+    private List<CatFact> facts;
+    private Vm.OnFactGetListener listener;
 
-        // Provide a reference to the views for each data item
-        // Complex data items may need more than one view per item, and
-        // you provide access to all the views for a data item in a view holder
-        public static class MyViewHolder extends RecyclerView.ViewHolder {
+
+
+
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
             // each data item is just a string in this case
             public TextView textView;
-            public MyViewHolder(TextView v) {
-                super(v);
-                textView = v;
+            public MyViewHolder(View itemView) {
+                super(itemView);
+                textView = (TextView) itemView;
             }
         }
 
-        // Provide a suitable constructor (depends on the kind of dataset)
-        public MyAdapter(String[] myDataset) {
-            mDataset = myDataset;
+        public MyAdapter(List<CatFact> facts, Vm.OnFactGetListener listener) {
+            this.facts=facts;
+            this.listener=listener;
         }
 
-        // Create new views (invoked by the layout manager)
+
         @Override
-        public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType) {
-            // create a new view
-            TextView v = (TextView) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.my_text_view, parent, false); //Create a xml for text view
-            MyViewHolder vh = new MyViewHolder(v);
+        public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+           // TextView v = (TextView) LayoutInflater.from(parent.getContext())
+           //         .inflate(R.layout.my_text_view, parent, false); //Create a xml for text view
+            TextView textView= new TextView(parent.getContext());
+            textView.setBackgroundColor(new Random().nextInt());
+            MyViewHolder vh = new MyViewHolder(textView);
             return vh;
         }
 
-        // Replace the contents of a view (invoked by the layout manager)
-        @Override
-        public void onBindViewHolder(MyViewHolder holder, int position) {
-            // - get element from your dataset at this position
-            // - replace the contents of the view with that element
-            holder.textView.setText(mDataset[position]);
+    @Override
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        final CatFact fact=facts.get(position);
+        holder.textView.setText(Html.fromHtml(fact.fact));
+        holder.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onFactGet(fact.fact);
 
-        }
+            }
+        });
+    }
 
-        // Return the size of your dataset (invoked by the layout manager)
+
         @Override
         public int getItemCount() {
-            return mDataset.length;
+            return facts.size();
         }
+
     }

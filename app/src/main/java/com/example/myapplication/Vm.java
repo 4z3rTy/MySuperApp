@@ -5,18 +5,23 @@ import android.widget.TextView;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Vm extends ViewModel {
 
@@ -28,6 +33,13 @@ public class Vm extends ViewModel {
 
         // Create a LiveData with a String
         private MutableLiveData<String> currentName;
+        private MutableLiveData<List<CatFact>> factsLiveData = new MutableLiveData<List<CatFact>>();
+        CatFactApi api = initRetrofit();
+
+        public Vm() {
+
+            getFacts();
+        }
 
         public MutableLiveData<String> getCurrentName() {
             if (currentName == null) {
@@ -35,6 +47,37 @@ public class Vm extends ViewModel {
             }
             return currentName;
         }
+
+        public LiveData<List<CatFact>> getFactsLiveData() {
+            return factsLiveData;
+        }
+
+        private CatFactApi initRetrofit() {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://catfact.ninja/fact")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            return retrofit.create(CatFactApi.class);
+        }
+
+        private void getFacts() {
+            api.getFacts().enqueue(new Callback<List<CatFact>>() {
+                @Override
+                public void onResponse(@NotNull Call<List<CatFact>> call, @NotNull Response<List<CatFact>> response) throws IOException {
+                    List<CatFact> facts = response.body();
+                    factsLiveData.setValue(facts);
+                }
+
+
+                @Override
+                public void onFailure(@NotNull Call<List<CatFact>> call, @NotNull IOException e) {
+                    factsLiveData.setValue(new ArrayList<CatFact>());
+                }
+
+            });
+
+
+    }
 
 
 
@@ -48,8 +91,9 @@ public class Vm extends ViewModel {
 
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    e.printStackTrace();
+                    factsLiveData.setValue(new ArrayList<CatFact>());
                 }
+
 
                 public String parseJSONWithJSONObject(String jsonString)
                 {
