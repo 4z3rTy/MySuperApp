@@ -23,7 +23,7 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Vm extends ViewModel {
+public class VModel extends androidx.lifecycle.ViewModel {
 
         OkHttpClient client = new OkHttpClient();
         String url = "https://catfact.ninja/fact";
@@ -31,12 +31,11 @@ public class Vm extends ViewModel {
         TextView textView;
 
 
-        // Create a LiveData with a String
         private MutableLiveData<String> currentName;
         private MutableLiveData<List<CatFact>> factsLiveData = new MutableLiveData<List<CatFact>>();
         CatFactApi api = initRetrofit();
 
-        public Vm() {
+        public VModel() {
 
             getFacts();
         }
@@ -60,14 +59,13 @@ public class Vm extends ViewModel {
             return retrofit.create(CatFactApi.class);
         }
 
-        private void getFacts() {
+        private void getFacts() {                                                          // Error with okhhttp Impossible to modify the signature of onResponse and onFailure
             api.getFacts().enqueue(new Callback<List<CatFact>>() {
                 @Override
                 public void onResponse(@NotNull Call<List<CatFact>> call, @NotNull Response<List<CatFact>> response) throws IOException {
                     List<CatFact> facts = response.body();
                     factsLiveData.setValue(facts);
                 }
-
 
                 @Override
                 public void onFailure(@NotNull Call<List<CatFact>> call, @NotNull IOException e) {
@@ -135,11 +133,8 @@ public class Vm extends ViewModel {
                     }
                 }
             });
-
-
-
-
         }
+
 
     interface OnFactGetListener {
         public void onFactGet(String fact);

@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import android.nfc.cardemulation.CardEmulation;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button btn;
     EditText et;
     TextView textView;
-    Vm model;
+    VModel model;
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -45,15 +44,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
+
         recyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        final Vm.OnFactGetListener listener;
-        mAdapter = new MyAdapter(<List<CatFact>> facts, listener);
+        final VModel.OnFactGetListener listener;
+        //mAdapter = new MyAdapter(List<CatFact> facts, listener);
         recyclerView.setAdapter(mAdapter);
 
 
@@ -69,18 +66,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        model = new ViewModelProvider(this).get(Vm.class);
+        model = new ViewModelProvider(this).get(VModel.class);
 
         final Observer<String> nameObserver = new Observer<String>() {
             @Override
             public void onChanged(@Nullable final String newName) {
-                // Update the UI, in this case, a TextView.
                 textView.setText(newName);
             }
         };
 
 
-        model.getFact(new Vm.OnFactGetListener() {
+        model.getFact(new VModel.OnFactGetListener() {
             @Override
             public void onFactGet(final String fact) {
                 runOnUiThread(new Runnable() {
@@ -114,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
+   @Override
     public void onClick(View v) {
         String str=et.getText().toString();
         Toast msg = Toast.makeText(getBaseContext(), str, Toast.LENGTH_LONG);
@@ -123,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    @Override
     public void onFactClicked(CatFact catFact) {
         Toast.makeText(getBaseContext(), catFact.fact, Toast.LENGTH_LONG).show();
 

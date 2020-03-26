@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.text.Html;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -9,21 +8,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 import java.util.Random;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private List<CatFact> facts;
-    private Vm.OnFactGetListener listener;
+    private VModel.OnFactGetListener listener;
 
 
 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-            // each data item is just a string in this case
             public TextView textView;
             public MyViewHolder(View itemView) {
                 super(itemView);
@@ -31,7 +27,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         }
 
-        public MyAdapter(List<CatFact> facts, Vm.OnFactGetListener listener) {
+        public MyAdapter(List<CatFact> facts, VModel.OnFactGetListener listener) {
             this.facts=facts;
             this.listener=listener;
         }
